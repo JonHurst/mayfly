@@ -66,13 +66,20 @@ def build_javascript_lookup_object(
         start_bin: datetime.datetime,
         end_bin: datetime.datetime
 ) -> str:
-    pairs = []
+    reverse_dict: Dict[str, List[datetime.datetime]] = {}
     for key in data:
         if key < start_bin or key >= end_bin: continue
         for _list in (data[key].arrivals, data[key].departures):
             for service in _list:
-                pairs.append('"{}":"{}"'.format(
-                    service, _make_id(key)))
+                if service not in reverse_dict:
+                    reverse_dict[service] = []
+                reverse_dict[service].append(key)
+    pairs = []
+    for service in reverse_dict:
+        pairs.append('"{}": [{}]'.format(
+            service,
+            ", ".join(['"' + _make_id(X) + '"'
+                       for X in reverse_dict[service]])))
     return "var lookup = {" + ", ".join(pairs) + "};"
 
 
