@@ -56,3 +56,9 @@ p.dep {
 #key table, #key tr {
     border-style: none;
 }
+
+#services {
+    float:left;
+    width: 15em;
+    font-size: larger;
+}
