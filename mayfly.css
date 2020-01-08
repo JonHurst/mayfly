@@ -1,0 +1,58 @@
+h1 {
+    background-color: #ee8822;
+    color: white;
+    text-align: center;
+}
+
+#mayfly_chart {
+    max-width: 60em;
+    margin: auto;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+#mayfly_chart table {
+    width: 100%;
+}
+
+table, tr, th {
+    border: 1px solid lightgrey;
+}
+
+td.cool {
+    background: linear-gradient(lightgreen, white);
+}
+
+td.warm {
+    background: linear-gradient(#ffbf80, white);
+}
+
+tr.selected {
+    border: solid 3px black;
+}
+
+td.bin_data p {
+    text-align: center;
+    font-weight: bold;
+    margin: 3px 0;
+}
+
+p.arr {
+    background-color: #6699ff;
+}
+
+p.dep {
+    background-color: #ff9933;
+}
+
+
+#key table {
+    margin: 1em 0 1em auto;
+    width: 15em;
+}
+
+#key table, #key tr {
+    border-style: none;
+}
