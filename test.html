@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bristol Mayfly</title>
+<link href="mayfly.css" rel="stylesheet"/>
+<script>var lookup = {"FR1590":"id20010810", "EZY6149":"id20010810", "EZY6222":"id20010811", "GR642":"id20010811", "FR1591":"id20010811", "FR8297":"id20010812", "EZY6026":"id20010812", "FR8213":"id20010812", "GR643":"id20010812", "FR8202":"id20010812", "KL1051":"id20010813", "FR8217":"id20010813", "FR506":"id20010813", "EZY425":"id20010813", "EZY6155":"id20010813", "KL1052":"id20010813", "FR8216":"id20010813", "EZY6150":"id20010814", "FR507":"id20010814", "EZY405":"id20010814", "EZY6246":"id20010815", "FR8203":"id20010815", "FR5341":"id20010815", "EZY427":"id20010815", "EZY6282":"id20010816", "EZY426":"id20010816", "BE6480":"id20010816", "KL1053":"id20010816", "EZY6066":"id20010817", "SN2057":"id20010817", "EZY6156":"id20010817", "EZY406":"id20010817", "BE6481":"id20010817", "FR509":"id20010817", "KL1054":"id20010817", "SN2058":"id20010817", "LM1763":"id20010818", "LM2766":"id20010818", "EZY6262":"id20010818", "EZY428":"id20010818", "EI3286":"id20010818", "EZY6264":"id20010818", "FR3775":"id20010818", "EZY6167":"id20010818", "EZY6223":"id20010818", "LM1763":"id20010818", "LM2766":"id20010818", "EZY407":"id20010818", "LM45":"id20010819", "FR508":"id20010819", "EI3287":"id20010819", "EZY447":"id20010819", "EZY570":"id20010819", "FR3774":"id20010819", "LM46":"id20010819", "EZY6020":"id20010820", "EZY6168":"id20010821", "SN2059":"id20010821", "EZY408":"id20010821", "EZY6224":"id20010821", "EZY448":"id20010822", "EZY569":"id20010822", "KL1057":"id20010822", "FR5342":"id20010822", "SN2060":"id20010906", "KL1046":"id20010906", "EZY6051":"id20010906", "EZY6061":"id20010906", "LM2765":"id20010907", "FR504":"id20010907", "EZY421":"id20010907", "EZY441":"id20010907", "EZY6001":"id20010907", "EZY6039":"id20010907", "FR8240":"id20010907", "EZY6025":"id20010907", "FR4753":"id20010907", "EZY6071":"id20010907", "EZY6221":"id20010907", "TOM9854P":"id20010907", "EZY6005":"id20010907", "EZY6161":"id20010907", "LM2765":"id20010907", "EI3280":"id20010908", "LM1762":"id20010908", "KL1049":"id20010908", "FR505":"id20010908", "EI3281":"id20010908", "EZY442":"id20010909", "EZY422":"id20010909", "KL1050":"id20010909", "TOM6464":"id20010909", "BE6472":"id20010910", "EZY6241":"id20010910", "EZY6162":"id20010911", "EZY6222":"id20010911", "EZY403":"id20010911", "BE6473":"id20010911", "FR8297":"id20010912", "FR8241":"id20010912", "EZY6026":"id20010912", "EZY6040":"id20010912", "EZY6052":"id20010912", "FR8207":"id20010912", "FR8296":"id20010912", "KL1051":"id20010913", "EZY6072":"id20010913", "FR506":"id20010913", "EZY6002":"id20010913", "EZY6006":"id20010913", "FR8206":"id20010913", "FR8262":"id20010913", "EZY6265":"id20010913", "EZY6095":"id20010913", "EZY6155":"id20010913", "EZY415":"id20010913", "KL1052":"id20010913", "FR8121":"id20010913", "EZY6253":"id20010913", "EZY404":"id20010914", "EZY6242":"id20010914", "FR507":"id20010914", "EZY425":"id20010914", "EZY445":"id20010914", "EZY405":"id20010914", "EI3284":"id20010915", "EZY6062":"id20010915", "LM1763":"id20010915", "EI3285":"id20010915", "EZY427":"id20010915", "EZY6299":"id20010915", "FR4754":"id20010916", "EZY567":"id20010916", "KL1053":"id20010916", "EZY6197":"id20010916", "EZY6275":"id20010916", "EZY6035":"id20010916", "EZY416":"id20010917", "SN2057":"id20010917", "EZY446":"id20010917", "EZY426":"id20010917", "EZY6156":"id20010917", "FR8263":"id20010917", "FR4136":"id20010917", "EZY406":"id20010917", "EZY6185":"id20010917", "EZY6291":"id20010917", "FR509":"id20010917", "EZY568":"id20010917", "KL1054":"id20010917", "EZY6237":"id20010917", "EZY6141":"id20010917", "SN2058":"id20010917", "EZY6159":"id20010917", "LM2766":"id20010918", "EZY6266":"id20010918", "EZY428":"id20010918", "EI3286":"id20010918", "TOM6465":"id20010918", "EZY6167":"id20010918", "FR4135":"id20010918", "EZY6223":"id20010918", "LM2766":"id20010918", "EZY407":"id20010918", "EZY6254":"id20010919", "LM45":"id20010919", "LM1764":"id20010919", "ENT0511P":"id20010919", "FR508":"id20010919", "FR8122":"id20010919", "EI3287":"id20010919", "EZY447":"id20010919", "LM46":"id20010919", "EZY569":"id20010920", "EZY432":"id20010920", "EZY6198":"id20010920", "EZY570":"id20010920", "EZY431":"id20010920", "EZY6292":"id20010921", "SN2059":"id20010921", "EZY408":"id20010921", "EZY6168":"id20010921", "EZY6276":"id20010921", "EZY6036":"id20010921", "EZY6160":"id20010921", "EZY6224":"id20010921", "EZY6142":"id20010921", "EZY6300":"id20010921", "EZY448":"id20010922", "KL1057":"id20010922", "EZY6238":"id20010922", "EZY6096":"id20010922", "EZY6186":"id20010923", "SN2060":"id20011006", "KL1046":"id20011006", "EZY6051":"id20011006", "FR7226":"id20011006", "FR8224":"id20011006", "FR8254":"id20011006", "EZY442":"id20011007", "FR504":"id20011007", "EZY421":"id20011007", "EZY6149":"id20011007", "EZY6081":"id20011007", "EZY6295":"id20011007", "EZY6025":"id20011007", "FR8240":"id20011007", "EZY6071":"id20011007", "EZY6135":"id20011007", "EZY6221":"id20011007", "EZY6161":"id20011007", "EZY6253":"id20011007", "EI3280":"id20011008", "KL1049":"id20011008", "FR6689":"id20011008", "FR505":"id20011008", "EZY441":"id20011008", "EI3281":"id20011008", "EZY401":"id20011008", "FR8682":"id20011009", "EZY422":"id20011009", "KL1050":"id20011009", "FR6690":"id20011009"};</script>
+<script src="mayfly.js"></script>
+</head>
+<body>
+<h1 id="title">Bristol Arrivals and Departures</h1>
+<div id="mayfly_chart">
+<input type="text" id="services"/>
+<div id="key"><table>
+<colgroup>
+<col style="width:8em;"/><col style="width:8em;"/>
+</colgroup>
+<tr><td class="bin_data"><p class="arr">Arrivals</p></td>
+<td class="bin_data"><p class="dep">Departures</p></td></tr>
+</table></div>
+<table>
+<colgroup>
+<col style="width:3em;"/><col/>
+</colgroup>
+<tr><th>Time</th><th>Wednesday 08 January</th></tr>
+<tr id="id20010810" class="bin">
+<th class="time">10</th>
+<td class="bin_data cool">
+<p class="arr" style="width:6%">1</p>
+<p class="dep" style="width:6%">1</p>
+</td>
+</tr>
+<tr id="id20010811" class="bin">
+<th class="time">11</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:6%">1</p>
+</td>
+</tr>
+<tr id="id20010812" class="bin">
+<th class="time">12</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010813" class="bin">
+<th class="time">13</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20010814" class="bin">
+<th class="time">14</th>
+<td class="bin_data cool">
+<p class="arr" style="width:6%">1</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010815" class="bin">
+<th class="time">15</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010816" class="bin">
+<th class="time">16</th>
+<td class="bin_data cool">
+<p class="arr" style="width:26%">4</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010817" class="bin">
+<th class="time">17</th>
+<td class="bin_data cool">
+<p class="arr" style="width:26%">4</p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20010818" class="bin">
+<th class="time">18</th>
+<td class="bin_data cool">
+<p class="arr" style="width:46%">7</p>
+<p class="dep" style="width:33%">5</p>
+</td>
+</tr>
+<tr id="id20010819" class="bin">
+<th class="time">19</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:33%">5</p>
+</td>
+</tr>
+<tr id="id20010820" class="bin">
+<th class="time">20</th>
+<td class="bin_data cool">
+<p class="arr" style="width:6%">1</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010821" class="bin">
+<th class="time">21</th>
+<td class="bin_data cool">
+<p class="arr" style="width:26%">4</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010822" class="bin">
+<th class="time">22</th>
+<td class="bin_data cool">
+<p class="arr" style="width:26%">4</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010823" class="bin">
+<th class="time">23</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr><th>Time</th><th>Thursday 09 January</th></tr>
+<tr id="id20010900" class="bin">
+<th class="time">00</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010901" class="bin">
+<th class="time">01</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010902" class="bin">
+<th class="time">02</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010903" class="bin">
+<th class="time">03</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010904" class="bin">
+<th class="time">04</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010905" class="bin">
+<th class="time">05</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010906" class="bin">
+<th class="time">06</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20010907" class="bin">
+<th class="time">07</th>
+<td class="bin_data warm">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:86%">13</p>
+</td>
+</tr>
+<tr id="id20010908" class="bin">
+<th class="time">08</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010909" class="bin">
+<th class="time">09</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010910" class="bin">
+<th class="time">10</th>
+<td class="bin_data cool">
+<p class="arr" style="width:6%">1</p>
+<p class="dep" style="width:6%">1</p>
+</td>
+</tr>
+<tr id="id20010911" class="bin">
+<th class="time">11</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010912" class="bin">
+<th class="time">12</th>
+<td class="bin_data cool">
+<p class="arr" style="width:40%">6</p>
+<p class="dep" style="width:6%">1</p>
+</td>
+</tr>
+<tr id="id20010913" class="bin">
+<th class="time">13</th>
+<td class="bin_data cool">
+<p class="arr" style="width:33%">5</p>
+<p class="dep" style="width:60%">9</p>
+</td>
+</tr>
+<tr id="id20010914" class="bin">
+<th class="time">14</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20010915" class="bin">
+<th class="time">15</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20010916" class="bin">
+<th class="time">16</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:20%">3</p>
+</td>
+</tr>
+<tr id="id20010917" class="bin">
+<th class="time">17</th>
+<td class="bin_data warm">
+<p class="arr" style="width:53%">8</p>
+<p class="dep" style="width:60%">9</p>
+</td>
+</tr>
+<tr id="id20010918" class="bin">
+<th class="time">18</th>
+<td class="bin_data cool">
+<p class="arr" style="width:33%">5</p>
+<p class="dep" style="width:33%">5</p>
+</td>
+</tr>
+<tr id="id20010919" class="bin">
+<th class="time">19</th>
+<td class="bin_data cool">
+<p class="arr" style="width:40%">6</p>
+<p class="dep" style="width:20%">3</p>
+</td>
+</tr>
+<tr id="id20010920" class="bin">
+<th class="time">20</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+<tr id="id20010921" class="bin">
+<th class="time">21</th>
+<td class="bin_data cool">
+<p class="arr" style="width:66%">10</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010922" class="bin">
+<th class="time">22</th>
+<td class="bin_data cool">
+<p class="arr" style="width:26%">4</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20010923" class="bin">
+<th class="time">23</th>
+<td class="bin_data cool">
+<p class="arr" style="width:6%">1</p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr><th>Time</th><th>Friday 10 January</th></tr>
+<tr id="id20011000" class="bin">
+<th class="time">00</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011001" class="bin">
+<th class="time">01</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011002" class="bin">
+<th class="time">02</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011003" class="bin">
+<th class="time">03</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011004" class="bin">
+<th class="time">04</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011005" class="bin">
+<th class="time">05</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:0%"> </p>
+</td>
+</tr>
+<tr id="id20011006" class="bin">
+<th class="time">06</th>
+<td class="bin_data cool">
+<p class="arr" style="width:0%"> </p>
+<p class="dep" style="width:40%">6</p>
+</td>
+</tr>
+<tr id="id20011007" class="bin">
+<th class="time">07</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:73%">11</p>
+</td>
+</tr>
+<tr id="id20011008" class="bin">
+<th class="time">08</th>
+<td class="bin_data cool">
+<p class="arr" style="width:20%">3</p>
+<p class="dep" style="width:26%">4</p>
+</td>
+</tr>
+<tr id="id20011009" class="bin">
+<th class="time">09</th>
+<td class="bin_data cool">
+<p class="arr" style="width:13%">2</p>
+<p class="dep" style="width:13%">2</p>
+</td>
+</tr>
+
+</table>
+
+</div></body></html>

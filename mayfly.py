@@ -103,11 +103,12 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
 def main(csv_filename: str, html_filename: str) -> None:
     with open(csv_filename) as f:
         bins = process_csv(f.readlines())
-        page = build_page(bins)
-        print(page)
+        with open(html_filename, "w") as o:
+            o.write(build_page(bins))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) == 3:
+        main(sys.argv[1], sys.argv[2])
+    else:
         print("usage:", sys.argv[0], "csv_file html_file")
-    main(sys.argv[1], sys.argv[2])
