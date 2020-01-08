@@ -32,6 +32,10 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
     return retval
 
 
+def _make_id(dt: datetime.datetime) -> str:
+    return "id" + dt.strftime("%y%m%d%H")
+
+
 def build_bin(current_bin: datetime.datetime,
               data: Dict[datetime.datetime, MayflyBin],
               max_scale: int, warm_threshold: int
@@ -48,12 +52,28 @@ def build_bin(current_bin: datetime.datetime,
     departures_width = departures_count * 100 // max_scale
     if departures_width > 100: departures_width = 100
     return (templates.bin_template.format(
-            current_bin.hour,
-            heat,
-            arrivals_width,
-            str(arrivals_count) if arrivals_count else " ",
-            departures_width,
-            str(departures_count) if departures_count else " "))
+        _make_id(current_bin),
+        current_bin.hour,
+        heat,
+        arrivals_width,
+        str(arrivals_count) if arrivals_count else " ",
+        departures_width,
+        str(departures_count) if departures_count else " "))
+
+
+def build_javascript_lookup_object(
+        data: Dict[datetime.datetime, MayflyBin],
+        start_bin: datetime.datetime,
+        end_bin: datetime.datetime
+) -> str:
+    pairs = []
+    for key in data:
+        if key < start_bin or key >= end_bin: continue
+        for _list in (data[key].arrivals, data[key].departures):
+            for service in _list:
+                pairs.append('"{}":"{}"'.format(
+                    service, _make_id(key)))
+    return "var lookup = {" + ", ".join(pairs) + "};"
 
 
 def build_page(data: Dict[datetime.datetime, MayflyBin],
@@ -75,6 +95,7 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
             build_bin(current_bin, data, max_scale, warm_threshold))
         current_bin = current_bin + datetime.timedelta(hours=1)
     return (templates.page_template.format(
+        build_javascript_lookup_object(data, start_bin, end_bin),
         templates.table_template.format(
             "".join(bin_list))))
 

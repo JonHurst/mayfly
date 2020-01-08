@@ -3,7 +3,7 @@ header = """\
 """
 
 bin_template = """\
-<tr class="bin">
+<tr id="{}" class="bin">
 <th class="time">{:02d}</th>
 <td class="bin_data {}">
 <p class="arr" style="width:{:d}%">{}</p>
@@ -29,6 +29,8 @@ page_template = """\
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Bristol Mayfly</title>
 <link href="mayfly.css" rel="stylesheet"/>
+<script>{}</script>
+<script src="mayfly.js"></script>
 </head>
 <body>
 <h1 id="title">Bristol Arrivals and Departures</h1>
