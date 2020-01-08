@@ -33,4 +33,7 @@ function services_box_changed(event) {
 window.onload = function() {
     var i = document.getElementById("services");
     i.addEventListener("input", services_box_changed);
+    i.addEventListener("keyup", function(event) {
+        if(event.keyCode === 13) i.blur();
+    });
 };
