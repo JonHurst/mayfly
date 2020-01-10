@@ -88,8 +88,10 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
                warm_threshold: int = 15,
                mayfly_window: int = 48
 ) -> str:
-    start_bin = datetime.datetime.utcnow().replace(
-        minute=0, second=0, microsecond=0)
+    start_bin = (
+        datetime.datetime.utcnow().replace(
+            minute=0, second=0, microsecond=0) -
+        datetime.timedelta(hours=1))
     end_bin = start_bin + datetime.timedelta(hours=mayfly_window)
     bin_list = []
     current_bin = start_bin
