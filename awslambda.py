@@ -19,6 +19,8 @@ def lambda_handler(event, context):
                 'ezybrs.hursts.org.uk', 'mayfly.html',
                 ExtraArgs={
                     'ACL': 'public-read',
-                    'ContentType': 'text/html'}
+                    'ContentType': 'text/html',
+                    'CacheControl': 'no-cache'
+                }
             )
             print("Done")
