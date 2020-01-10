@@ -47,6 +47,13 @@ p.dep {
     background-color: #ff9933;
 }
 
+p.arr, p.dep {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
 
 #key table {
     margin: 1em 0 1em auto;

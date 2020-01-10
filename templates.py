@@ -7,7 +7,9 @@ bin_template = """\
 <th class="time">{:02d}</th>
 <td class="bin_data {}">
 <p class="arr" style="width:{:d}%">{}</p>
+<div class="arr_svc hidden">{}</div>
 <p class="dep" style="width:{:d}%">{}</p>
+<div class="dep_svc hidden">{}</div>
 </td>
 </tr>
 """

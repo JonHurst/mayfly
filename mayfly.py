@@ -2,15 +2,15 @@
 
 import sys
 import csv
-from typing import NamedTuple, List, Dict
+from typing import NamedTuple, List, Dict, Tuple
 import datetime
 
 import templates
 
 
 class MayflyBin(NamedTuple):
-    arrivals: List[str]
-    departures: List[str]
+    arrivals: List[Tuple[datetime.datetime, str]]
+    departures: List[Tuple[datetime.datetime,str]]
 
 
 def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
@@ -26,9 +26,9 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
         if bin_id not in retval:
             retval[bin_id] = MayflyBin([], [])
         if row[1] == "A":
-            retval[bin_id].arrivals.append(service)
+            retval[bin_id].arrivals.append((dt, service))
         elif row[1] == "D":
-            retval[bin_id].departures.append(service)
+            retval[bin_id].departures.append((dt, service))
     return retval
 
 
@@ -36,14 +36,29 @@ def _make_id(dt: datetime.datetime) -> str:
     return "id" + dt.strftime("%y%m%d%H")
 
 
+def build_service_list(services: List[Tuple[datetime.datetime, str]]
+) -> str:
+    output_strings: List[str] = []
+    for s in services:
+        output_strings.append("<li><b>{}</b>: {}</li>".format(
+            s[0].strftime("%H:%M"),
+            s[1]))
+    return "<ul>{}</ul>".format("".join(output_strings))
+
+
 def build_bin(current_bin: datetime.datetime,
               data: Dict[datetime.datetime, MayflyBin],
               max_scale: int, warm_threshold: int
 ) -> str:
     arrivals_count, departures_count = 0, 0
+    arrivals_listing, departures_listing = "", ""
     if current_bin in data:
         arrivals_count = len(data[current_bin].arrivals)
+        arrivals_listing = build_service_list(
+            data[current_bin].arrivals)
         departures_count = len(data[current_bin].departures)
+        departures_listing = build_service_list(
+            data[current_bin].departures)
     heat = "cool"
     if departures_count + arrivals_count >= warm_threshold:
         heat = "warm"
@@ -57,8 +72,10 @@ def build_bin(current_bin: datetime.datetime,
         heat,
         arrivals_width,
         str(arrivals_count) if arrivals_count else " ",
+        arrivals_listing,
         departures_width,
-        str(departures_count) if departures_count else " "))
+        str(departures_count) if departures_count else " ",
+        departures_listing))
 
 
 def build_javascript_lookup_object(
@@ -71,15 +88,15 @@ def build_javascript_lookup_object(
         if key < start_bin or key >= end_bin: continue
         for _list in (data[key].arrivals, data[key].departures):
             for service in _list:
-                if service not in reverse_dict:
-                    reverse_dict[service] = []
-                reverse_dict[service].append(key)
+                if service[1] not in reverse_dict:
+                    reverse_dict[service[1]] = []
+                reverse_dict[service[1]].append(key)
     pairs = []
-    for service in reverse_dict:
+    for service_id in reverse_dict:
         pairs.append('"{}": [{}]'.format(
-            service,
+            service_id,
             ", ".join(['"' + _make_id(X) + '"'
-                       for X in reverse_dict[service]])))
+                       for X in reverse_dict[service_id]])))
     return "var lookup = {" + ", ".join(pairs) + "};"
 
 
