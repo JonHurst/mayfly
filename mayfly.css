@@ -47,7 +47,7 @@ p.dep {
     background-color: #ff9933;
 }
 
-p.arr, p.dep {
+.bin p.arr, .bin p.dep {
     cursor: pointer;
 }
 
