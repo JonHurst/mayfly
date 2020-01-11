@@ -8,9 +8,15 @@ import datetime
 import templates
 
 
+class Service(NamedTuple):
+    dt: datetime.datetime
+    operator_id: str
+    service_id: str
+
+
 class MayflyBin(NamedTuple):
-    arrivals: List[Tuple[datetime.datetime, str]]
-    departures: List[Tuple[datetime.datetime,str]]
+    arrivals: List[Service]
+    departures: List[Service]
 
 
 def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
@@ -22,13 +28,13 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
         dt = datetime.datetime.strptime(dt_string, "%d/%m/%Y%H%M")
         #todo: convert time to UTC
         bin_id = dt.replace(minute=0)
-        service = row[2] + row[3]
+        service = Service(dt, row[2], row[3])
         if bin_id not in retval:
             retval[bin_id] = MayflyBin([], [])
         if row[1] == "A":
-            retval[bin_id].arrivals.append((dt, service))
+            retval[bin_id].arrivals.append(service)
         elif row[1] == "D":
-            retval[bin_id].departures.append((dt, service))
+            retval[bin_id].departures.append(service)
     return retval
 
 
@@ -36,13 +42,13 @@ def _make_id(dt: datetime.datetime) -> str:
     return "id" + dt.strftime("%y%m%d%H")
 
 
-def build_service_list(services: List[Tuple[datetime.datetime, str]]
+def build_service_list(services: List[Service]
 ) -> str:
     output_strings: List[str] = []
     for s in services:
         output_strings.append("<li><b>{}</b>: {}</li>".format(
-            s[0].strftime("%H:%M"),
-            s[1]))
+            s.dt.strftime("%H:%M"),
+            s.operator_id + s.service_id))
     return "<ul>{}</ul>".format("".join(output_strings))
 
 
@@ -88,9 +94,11 @@ def build_javascript_lookup_object(
         if key < start_bin or key >= end_bin: continue
         for _list in (data[key].arrivals, data[key].departures):
             for service in _list:
-                if service[1] not in reverse_dict:
-                    reverse_dict[service[1]] = []
-                reverse_dict[service[1]].append(key)
+                if service.operator_id not in ["EZY", "EJU", "EZS"]:
+                   continue
+                if service.service_id not in reverse_dict:
+                    reverse_dict[service.service_id] = []
+                reverse_dict[service.service_id].append(key)
     pairs = []
     for service_id in reverse_dict:
         pairs.append('"{}": [{}]'.format(
