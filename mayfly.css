@@ -69,3 +69,8 @@ p.dep {
     width: 15em;
     font-size: larger;
 }
+
+li.ezy span.service {
+    color: blue;
+    font-weight: bold;
+}

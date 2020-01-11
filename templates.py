@@ -48,3 +48,17 @@ page_template = """\
 {}
 </div></body></html>
 """
+
+service_list_template = """\
+<ul>{}</ul>
+"""
+
+ezy_service_template = """\
+<li class="ezy"><span class="time">{}</span>:
+<span class="service">{}</span></li>
+"""
+
+nonezy_service_template = """\
+<li class="nonezy"><span class="time">{}</span>:
+<span class="service">{}</span></li>
+"""

@@ -7,6 +7,7 @@ import datetime
 
 import templates
 
+ezy_operator_ids = ["EZY", "EJU", "EZS"]
 
 class Service(NamedTuple):
     dt: datetime.datetime
@@ -44,12 +45,17 @@ def _make_id(dt: datetime.datetime) -> str:
 
 def build_service_list(services: List[Service]
 ) -> str:
+    global ezy_operator_ids
     output_strings: List[str] = []
     for s in services:
-        output_strings.append("<li><b>{}</b>: {}</li>".format(
+        template = templates.nonezy_service_template
+        if s.operator_id in ezy_operator_ids:
+            template = templates.ezy_service_template
+        output_strings.append(template.format(
             s.dt.strftime("%H:%M"),
             s.operator_id + s.service_id))
-    return "<ul>{}</ul>".format("".join(output_strings))
+    return templates.service_list_template.format(
+        "".join(output_strings))
 
 
 def build_bin(current_bin: datetime.datetime,
@@ -89,12 +95,13 @@ def build_javascript_lookup_object(
         start_bin: datetime.datetime,
         end_bin: datetime.datetime
 ) -> str:
+    global ezy_operator_ids
     reverse_dict: Dict[str, List[datetime.datetime]] = {}
     for key in data:
         if key < start_bin or key >= end_bin: continue
         for _list in (data[key].arrivals, data[key].departures):
             for service in _list:
-                if service.operator_id not in ["EZY", "EJU", "EZS"]:
+                if service.operator_id not in ezy_operator_ids:
                    continue
                 if service.service_id not in reverse_dict:
                     reverse_dict[service.service_id] = []
