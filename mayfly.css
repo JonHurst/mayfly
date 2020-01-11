@@ -1,5 +1,6 @@
 h1 {
-    background-color: #ee8822;
+    background-image: url("ezyheader.gif");
+    background-size: cover;
     color: white;
     text-align: center;
 }
