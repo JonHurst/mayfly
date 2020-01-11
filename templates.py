@@ -35,7 +35,7 @@ page_template = """\
 <script src="mayfly.js"></script>
 </head>
 <body>
-<h1 id="title">Bristol Arrivals and Departures</h1>
+<h1 id="title">Bristol Mayfly</h1>
 <div id="mayfly_chart">
 <input type="text" id="services"/>
 <div id="key"><table>
