@@ -30,7 +30,8 @@ fi
 
 if [ "$1" = "py" -o "$1" = "all" ]
 then
-#upload lambda function
+    #upload lambda function
+chmod a+r *.py
 zip $ZIPFILE *.py
 aws lambda update-function-code \
     --region "us-east-1" \
