@@ -26,6 +26,7 @@ fi
 if [ "$1" = "css" -o "$1" = "all" ]
 then
 aws s3 cp $STDOPTS --content-type="text/css" mayfly.css $BUCKET
+aws s3 cp $STDOPTS --content-type="image/gif" ezyheader.gif $BUCKET
 fi
 
 if [ "$1" = "py" -o "$1" = "all" ]
