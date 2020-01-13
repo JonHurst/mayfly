@@ -28,7 +28,10 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
         dt_string = row[0] + row[10]
         dt = datetime.datetime.strptime(dt_string, "%d/%m/%Y%H%M")
         #todo: convert time to UTC
-        bin_id = dt.replace(minute=0)
+        if dt.minute < 30:
+            bin_id = dt.replace(minute=0)
+        else:
+            bin_id = dt.replace(minute=30)
         service = Service(dt, row[2], row[3])
         if bin_id not in retval:
             retval[bin_id] = MayflyBin([], [])
@@ -40,7 +43,7 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
 
 
 def _make_id(dt: datetime.datetime) -> str:
-    return "id" + dt.strftime("%y%m%d%H")
+    return "id" + dt.strftime("%y%m%d%H%M")
 
 
 def build_service_list(services: List[Service]
@@ -80,7 +83,7 @@ def build_bin(current_bin: datetime.datetime,
     if departures_width > 100: departures_width = 100
     return (templates.bin_template.format(
         _make_id(current_bin),
-        current_bin.hour,
+        current_bin, current_bin + datetime.timedelta(minutes=30),
         heat,
         arrivals_width,
         str(arrivals_count) if arrivals_count else " ",
@@ -116,8 +119,8 @@ def build_javascript_lookup_object(
 
 
 def build_page(data: Dict[datetime.datetime, MayflyBin],
-               max_scale: int = 15,
-               warm_threshold: int = 15,
+               max_scale: int = 12,
+               warm_threshold: int = 7,
                mayfly_window: int = 48
 ) -> str:
     start_bin = (
@@ -128,13 +131,14 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
     bin_list = []
     current_bin = start_bin
     while current_bin != end_bin:
-        if current_bin == start_bin or current_bin.hour == 0:
+        if current_bin == start_bin or (
+                current_bin.hour == 0 and current_bin.minute == 0):
             h = templates.header.format(
                     current_bin.strftime("%A %d %B"))
             bin_list.append(h)
         bin_list.append(
             build_bin(current_bin, data, max_scale, warm_threshold))
-        current_bin = current_bin + datetime.timedelta(hours=1)
+        current_bin = current_bin + datetime.timedelta(minutes=30)
     return (templates.page_template.format(
         build_javascript_lookup_object(data, start_bin, end_bin),
         templates.table_template.format(

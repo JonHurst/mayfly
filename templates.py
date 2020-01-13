@@ -4,7 +4,7 @@ header = """\
 
 bin_template = """\
 <tr id="{}" class="bin">
-<th class="time">{:02d}</th>
+<th class="time">{:%H:%M} – {:%H:%M}</th>
 <td class="bin_data {}">
 <p class="arr" style="width:{:d}%">{}</p>
 <div class="arr_svc hidden">{}</div>
