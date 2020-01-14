@@ -1,14 +1,21 @@
 #!/bin/bash
 
-#usage: deploy.sh [html|js|css|py|all]
+#usage: deploy.sh [--stage] {html|js|css|py|all}
 
 PROJ_DIR="/home/jon/proj/mayfly"
 BUCKET="s3://ezybrs.hursts.org.uk"
+STAGING_BUCKET="s3://ezybrs-staging.hursts.org.uk"
 STDOPTS="--region=eu-west-2 --acl=public-read --cache-control=no-cache"
 ZIPFILE="deploy.zip"
 FUNCTIONID=update_mayfly
 
 cd $PROJ_DIR
+
+if [ "$1" == "--stage" ]
+then
+    shift
+    BUCKET=$STAGING_BUCKET
+fi
 
 if [ "$1" = "html" -o "$1" = "all" ]
 then
