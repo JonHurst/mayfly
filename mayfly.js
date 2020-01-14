@@ -1,5 +1,19 @@
 "use strict";
 
+function register_service_worker() {
+    if (!'serviceWorker' in navigator) return;
+    navigator.serviceWorker.register('/sw.js').then(
+        function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ',
+                        registration.scope);
+        },
+        function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+        });
+}
+
 var lookup;
 
 
@@ -48,4 +62,9 @@ window.onload = function() {
     l = document.getElementsByClassName("dep");
     for(c = 0; c < l.length; c++)
         l[c].addEventListener("click", toggle_service_listing);
+    if(!navigator.onLine) {
+        document.getElementById("title").appendChild(
+            document.createTextNode(" (offline)"));
+    }
+    register_service_worker();
 };

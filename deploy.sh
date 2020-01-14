@@ -28,6 +28,7 @@ fi
 if [ "$1" = "js" -o "$1" = "all" ]
 then
 aws s3 cp $STDOPTS --content-type="application/javascript" mayfly.js $BUCKET
+aws s3 cp $STDOPTS --content-type="application/javascript" sw.js $BUCKET
 fi
 
 if [ "$1" = "css" -o "$1" = "all" ]
