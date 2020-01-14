@@ -1,10 +1,10 @@
 header = """\
-<tr><th>Time</th><th>{}</th></tr>
+<tr><th colspan="2">{}</th></tr>
 """
 
 bin_template = """\
 <tr id="{}" class="bin">
-<th class="time">{:%H:%M} – {:%H:%M}</th>
+<th class="time"><span>{:%H:%M}</span></th>
 <td class="bin_data {}">
 <p class="arr" style="width:{:d}%">{}</p>
 <div class="arr_svc hidden">{}</div>

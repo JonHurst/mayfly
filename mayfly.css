@@ -10,16 +10,30 @@ h1 {
     margin: auto;
 }
 
-table {
-    border-collapse: collapse;
-}
-
 #mayfly_chart table {
     width: 100%;
 }
 
-table, tr, th {
-    border: 1px solid lightgrey;
+table {
+    border-collapse: collapse;
+}
+
+tr {
+    border: 2px solid lightgrey;
+    border-bottom: none;
+}
+
+tr:last-of-type {
+    border-bottom: 2px solid lightgrey;
+}
+
+tr.selected {
+    border-top: solid 2px black;
+    border-bottom: solid 2px black;
+}
+
+td {
+    padding: 2px;
 }
 
 td.cool {
@@ -30,14 +44,30 @@ td.warm {
     background: linear-gradient(#ffbf80, white);
 }
 
-tr.selected {
-    border: solid 3px black;
-}
-
 td.bin_data p {
     text-align: center;
     font-weight: bold;
     margin: 3px 0;
+}
+
+th.time {
+    font-size: 1em;
+    line-height: 1;
+    vertical-align: top;
+    width: 4em;
+}
+
+th.time span {
+    background-color: white;
+    border: 2px solid lightgray;
+    position: relative;
+    top: calc(-0.5em - 2px);
+    padding: 2px;
+}
+
+tr.selected th.time span {
+    border: 2px solid black;
+    background-color: yellow;
 }
 
 p.arr {

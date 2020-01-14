@@ -83,7 +83,7 @@ def build_bin(current_bin: datetime.datetime,
     if departures_width > 100: departures_width = 100
     return (templates.bin_template.format(
         _make_id(current_bin),
-        current_bin, current_bin + datetime.timedelta(minutes=30),
+        current_bin,
         heat,
         arrivals_width,
         str(arrivals_count) if arrivals_count else " ",
