@@ -119,7 +119,7 @@ def build_javascript_lookup_object(
 
 
 def build_page(data: Dict[datetime.datetime, MayflyBin],
-               max_scale: int = 12,
+               max_scale: int = 10,
                warm_threshold: int = 7,
                mayfly_window: int = 48
 ) -> str:
