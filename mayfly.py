@@ -13,6 +13,7 @@ class Service(NamedTuple):
     dt: datetime.datetime
     operator_id: str
     service_id: str
+    dest_or_orig: str
 
 
 class MayflyBin(NamedTuple):
@@ -32,7 +33,7 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
             bin_id = dt.replace(minute=0)
         else:
             bin_id = dt.replace(minute=30)
-        service = Service(dt, row[2], row[3])
+        service = Service(dt, row[2], row[3], row[4])
         if bin_id not in retval:
             retval[bin_id] = MayflyBin([], [])
         if row[1] == "A":
@@ -56,7 +57,7 @@ def build_service_list(services: List[Service]
             template = templates.ezy_service_template
         output_strings.append(template.format(
             s.dt.strftime("%H:%M"),
-            s.operator_id + s.service_id))
+            "{}{} ({})".format(s.operator_id, s.service_id, s.dest_or_orig)))
     return templates.service_list_template.format(
         "".join(output_strings))
 
