@@ -2,10 +2,11 @@
 
 var CACHE_NAME = "mayfly_static";
 var CACHE_FILES = [
-    'mayfly.html',
-    'mayfly.css',
-    'mayfly.js',
-    'ezyheader.gif'
+    '/',
+    '/mayfly.css',
+    '/mayfly.js',
+    '/ezyheader.gif',
+    '/favicon.ico'
 ];
 
 
@@ -43,7 +44,4 @@ function do_fetch(event) {
 }
 
 self.addEventListener('install', install_sw);
-self.addEventListener('activate', event => {
-    event.waitUntil(self.clients.claim());
-});
 self.addEventListener('fetch', do_fetch);
