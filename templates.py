@@ -37,7 +37,7 @@ page_template = """\
 <body>
 <h1 id="title">Bristol Mayfly</h1>
 <div id="mayfly_chart">
-<input type="text" id="services"/>
+<input type="text" id="services" placeholder="Type flight number(s) here"/>
 <div id="key"><table>
 <colgroup>
 <col style="width:8em;"/><col style="width:8em;"/>

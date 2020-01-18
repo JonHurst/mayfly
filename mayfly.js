@@ -26,7 +26,7 @@ function services_box_changed(event) {
     }
     //highlight any bins associated with services
     var i = document.getElementById("services");
-    var services = i.value.split(" ");
+    var services = i.value.replace(/[^0-9]+/g, " ").trim().split(" ");
     for(c = 0; c < services.length; c++) {
         if(!services[c]) continue;
         var service = services[c];
@@ -39,7 +39,6 @@ function services_box_changed(event) {
         }
     }
 }
-
 
 
 function toggle_service_listing(event) {
