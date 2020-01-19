@@ -101,6 +101,10 @@ p.dep {
     font-size: larger;
 }
 
+#services::placeholder {
+    color: #e0e0e0;
+}
+
 li.ezy span.service {
     font-weight: bold;
 }
