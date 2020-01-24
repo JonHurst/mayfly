@@ -145,7 +145,6 @@ def get_flight_info(d: dt.date):
 
 
 def _to_dt(s:str, d: dt.date) -> dt.datetime:
-    print(s, d)
     return dt.datetime.combine(
         d, dt.datetime.strptime(s, "%H:%M").time())
 

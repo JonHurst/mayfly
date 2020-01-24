@@ -55,7 +55,8 @@ service_list_template = """\
 
 ezy_service_template = """\
 <li class="ezy"><span class="time">{}</span>:
-<span class="service">{}</span></li>
+<span class="service">{}</span>
+<span class="{}">({:+d})</span></li>
 """
 
 nonezy_service_template = """\

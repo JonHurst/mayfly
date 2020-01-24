@@ -108,3 +108,12 @@ p.dep {
 li.ezy span.service {
     font-weight: bold;
 }
+
+.late {
+    font-weight: bold;
+    color:red;
+}
+
+.not_late {
+    color:green;
+}

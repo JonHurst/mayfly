@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 
 import sys
+import os
 import csv
 from typing import NamedTuple, List, Dict, Tuple
 import datetime
 
 import templates
+import flight_info
 
 ezy_operator_ids = ["EZY", "EJU", "EZS"]
 
@@ -14,6 +16,7 @@ class Service(NamedTuple):
     operator_id: str
     service_id: str
     dest_or_orig: str
+    delay: int = 0
 
 
 class MayflyBin(NamedTuple):
@@ -21,7 +24,8 @@ class MayflyBin(NamedTuple):
     departures: List[Service]
 
 
-def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
+def process_csv(data: List[str], updates: Dict[Service, Service]
+) -> Dict[datetime.datetime, MayflyBin]:
     reader = csv.reader(data)
     retval: Dict[datetime.datetime, MayflyBin] = {}
     for row in reader:
@@ -29,11 +33,13 @@ def process_csv(data: List[str]) -> Dict[datetime.datetime, MayflyBin]:
         dt_string = row[0] + row[10]
         dt = datetime.datetime.strptime(dt_string, "%d/%m/%Y%H%M")
         #todo: convert time to UTC
-        if dt.minute < 30:
-            bin_id = dt.replace(minute=0)
-        else:
-            bin_id = dt.replace(minute=30)
         service = Service(dt, row[2], row[3], row[4])
+        if service in updates:
+            service = updates[service]
+        if dt.minute < 30:
+            bin_id = service.dt.replace(minute=0)
+        else:
+            bin_id = service.dt.replace(minute=30)
         if bin_id not in retval:
             retval[bin_id] = MayflyBin([], [])
         if row[1] == "A":
@@ -54,10 +60,15 @@ def build_service_list(services: List[Service]
     for s in services:
         template = templates.nonezy_service_template
         if s.operator_id in ezy_operator_ids:
-            template = templates.ezy_service_template
-        output_strings.append(template.format(
-            s.dt.strftime("%H:%M"),
-            "{}{} ({})".format(s.operator_id, s.service_id, s.dest_or_orig)))
+            output_strings.append(templates.ezy_service_template.format(
+                s.dt.strftime("%H:%M"),
+                "{}{} {}".format(s.operator_id, s.service_id, s.dest_or_orig),
+                "late" if s.delay > 0 else "not_late",
+                s.delay))
+        else:
+            output_strings.append(templates.nonezy_service_template.format(
+                s.dt.strftime("%H:%M"),
+                "{}{} {}".format(s.operator_id, s.service_id, s.dest_or_orig)))
     return templates.service_list_template.format(
         "".join(output_strings))
 
@@ -146,9 +157,54 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
             "".join(bin_list))))
 
 
+def create_update_dict():
+    flight_info.connect_via_ecrew("009448",
+                                  os.getenv("AIMSPASSWORD"))
+    d = datetime.date.today()
+    arrivals, departures = flight_info.get_flight_info(d)
+    ret = {}
+    for f in arrivals:
+        if f.sched_on == f.on_: continue
+        flight_num_components = f.flight_num.split()
+        service_id = flight_num_components[-1]
+        op_id = "EZY"
+        if len(flight_num_components) == 2:
+            op_id = flight_num_components[0]
+        delay = int((f.on_ - f.sched_on).total_seconds() / 60)
+        ret[Service(
+            dt=f.sched_on,
+            operator_id=op_id,
+            service_id=service_id,
+            dest_or_orig=f.from_)] = Service(dt=f.on_,
+                                             operator_id=op_id,
+                                             service_id=service_id,
+                                             dest_or_orig=f.from_,
+                                             delay=delay)
+    for f in departures:
+        if f.sched_off == f.off_: continue
+        flight_num_components = f.flight_num.split()
+        service_id = flight_num_components[-1]
+        op_id = "EZY"
+        if len(flight_num_components) == 2:
+            op_id = flight_num_components[0]
+        delay = int((f.off_ - f.sched_off).total_seconds() / 60)
+        ret[Service(
+            dt=f.sched_off,
+            operator_id=op_id,
+            service_id=service_id,
+            dest_or_orig=f.to)] = Service(dt=f.off_,
+                                          operator_id=op_id,
+                                          service_id=service_id,
+                                          dest_or_orig=f.to,
+                                          delay=delay)
+    flight_info.logout(True)
+    return ret
+
+
 def main(csv_filename: str, html_filename: str) -> None:
+    updates = create_update_dict()
     with open(csv_filename) as f:
-        bins = process_csv(f.readlines())
+        bins = process_csv(f.readlines(), updates)
         with open(html_filename, "w") as o:
             o.write(build_page(bins))
 
