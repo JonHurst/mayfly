@@ -14,6 +14,7 @@ cd $PROJ_DIR
 if [ "$1" == "--stage" ]
 then
     shift
+    FUNCTIONID=update_mayfly_staging
     BUCKET=$STAGING_BUCKET
 fi
 
@@ -40,11 +41,15 @@ fi
 if [ "$1" = "py" -o "$1" = "all" ]
 then
     #upload lambda function
-chmod a+r *.py
-zip $ZIPFILE *.py
-aws lambda update-function-code \
-    --region "us-east-1" \
-    --function-name  "$FUNCTIONID" \
-    --zip-file "fileb://${PROJ_DIR}/${ZIPFILE}"
-rm $ZIPFILE
+    chmod -R a+rX package
+    cd package
+    zip -r9 ../$ZIPFILE .
+    cd ..
+    chmod a+r *.py
+    zip -g $ZIPFILE *.py
+    aws lambda update-function-code \
+        --region "us-east-1" \
+        --function-name  "$FUNCTIONID" \
+        --zip-file "fileb://${PROJ_DIR}/${ZIPFILE}"
+    rm $ZIPFILE
 fi
