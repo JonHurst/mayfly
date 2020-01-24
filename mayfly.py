@@ -36,7 +36,7 @@ def process_csv(data: List[str], updates: Dict[Service, Service]
         service = Service(dt, row[2], row[3], row[4])
         if service in updates:
             service = updates[service]
-        if dt.minute < 30:
+        if service.dt.minute < 30:
             bin_id = service.dt.replace(minute=0)
         else:
             bin_id = service.dt.replace(minute=30)
