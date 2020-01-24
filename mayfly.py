@@ -57,7 +57,7 @@ def build_service_list(services: List[Service]
 ) -> str:
     global ezy_operator_ids
     output_strings: List[str] = []
-    for s in services:
+    for s in sorted(services, key=lambda x: x.dt):
         template = templates.nonezy_service_template
         if s.operator_id in ezy_operator_ids:
             output_strings.append(templates.ezy_service_template.format(
