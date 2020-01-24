@@ -155,17 +155,20 @@ def parse_flight_info_html(html:str, d: dt.date):
     for row in soup.find_all("tr"):
         data = ["".join(X.stripped_strings)
                 for X in row.find_all("td")]
-        info.append(Flight(
-            flight_num = data[0],
-            from_ = data[1],
-            to = data[2],
-            type_ = data[3],
-            reg = data[4],
-            sched_off = _to_dt(data[6].split("Z")[0], d),
-            sched_on = _to_dt(data[7].split("Z")[0], d),
-            off_ = _to_dt(data[8].split("Z")[0], d),
-            on_ = _to_dt(data[9].split("Z")[0], d),
-        ))
+        try:
+            info.append(Flight(
+                flight_num = data[0],
+                from_ = data[1],
+                to = data[2],
+                type_ = data[3],
+                reg = data[4],
+                sched_off = _to_dt(data[6].split("Z")[0], d),
+                sched_on = _to_dt(data[7].split("Z")[0], d),
+                off_ = _to_dt(data[8].split("Z")[0], d),
+                on_ = _to_dt(data[9].split("Z")[0], d),
+            ))
+        except ValueError as err:
+            fprint(str(err))
     return info
 
 
