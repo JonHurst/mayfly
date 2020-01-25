@@ -10,10 +10,11 @@ def lambda_handler(event, context):
     global BUCKET
     print("Downloading csv")
     s3.download_file(BUCKET, 'mayfly.csv', "/tmp/mayfly.csv")
-    print("Done")
+    print("csv file downloaded")
     with open('/tmp/mayfly.csv') as f:
-        updates = mayfly.create_update_dict()
-        bins = mayfly.process_csv(f.readlines(), updates)
+        services = mayfly.process_csv(f.readlines())
+        services = mayfly.update_services_from_AIMS(services) or services
+        bins = mayfly.split_into_bins(services)
         with open('/tmp/mayfly.html', "w") as o:
             o.write(mayfly.build_page(bins))
             print("Uploading html")
@@ -26,7 +27,7 @@ def lambda_handler(event, context):
                     'CacheControl': 'no-cache'
                 }
             )
-            print("Done")
+            print("html uploaded")
 
 
 def staging_lambda_handler(event, context):
