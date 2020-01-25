@@ -48,46 +48,54 @@ def process_csv(data: List[str]) -> List[Service]:
     return retval
 
 
+
+def _make_update_dict(flights: List[flight_info.Flight]
+) -> Dict[Service, Service]:
+    updates = {}
+    for f in flights:
+        if f.from_ == "BRS":
+            type_ = "D"
+            delay = f.off - f.sched_off
+            dest_or_orig = f.to
+            dt = f.sched_off
+            new_dt = f.off
+        else:
+            type_ = "A"
+            delay = f.on - f.sched_on
+            dest_or_orig = f.from_
+            dt = f.sched_on
+            new_dt = f.on
+        updates[Service(type_=type_, dt=dt,
+                        operator_id=f.operator,
+                        service_id=f.flight_num,
+                        dest_or_orig=dest_or_orig)] = (
+                Service(type_=type_, dt=new_dt,
+                        operator_id=f.operator,
+                        service_id=f.flight_num,
+                        dest_or_orig=dest_or_orig,
+                        delay=int(delay.total_seconds() / 60)))
+    return updates
+
+
 def update_services_from_AIMS(services: List[Service]
 ) -> Optional[List[Service]]:
     try:
         flights = flight_info.get_AIMS_flights(
             os.getenv("AIMSPASSWORD") or getpass.getpass(),
             datetime.date.today(), 2)
-        updates = {}
-        for f in flights:
-            if f.from_ == "BRS":
-                type_ = "D"
-                delay = f.off - f.sched_off
-                dest_or_orig = f.to
-                dt = f.sched_off
-                new_dt = f.off
-            else:
-                type_ = "A"
-                delay = f.on - f.sched_on
-                dest_or_orig = f.from_
-                dt = f.sched_on
-                new_dt = f.on
-            updates[Service(type_=type_, dt=dt,
-                            operator_id=f.operator,
-                            service_id=f.flight_num,
-                            dest_or_orig=dest_or_orig)] = (
-                    Service(type_=type_, dt=new_dt,
-                            operator_id=f.operator,
-                            service_id=f.flight_num,
-                            dest_or_orig=dest_or_orig,
-                            delay=int(delay.total_seconds() / 60)))
-        retval: List[Service] = []
-        for s in services:
-            if s in updates:
-                retval.append(updates[s])
-            else:
-                retval.append(s)
-        return retval
     except Exception as err:
-        #much can go wrong talking to AIMS, so just return None if it does.
+        #much can go wrong talking to AIMS, so just return None if it throws any
+        #exceptions.
         print(err, file=sys.stderr)
         return None
+    updates = _make_update_dict(flights)
+    retval: List[Service] = []
+    for s in services:
+        if s in updates:
+            retval.append(updates[s])
+        else:
+            retval.append(s)
+    return retval
 
 
 def split_into_bins(services: List[Service]
@@ -118,7 +126,7 @@ def build_service_list(services: List[Service]
     for s in sorted(services, key=lambda x: x.dt):
         template = templates.nonezy_service_template
         if s.delay is None:
-            late_str = ""
+            late_str = "hidden"
             delay = 0
         else:
             late_str = "late" if s.delay > 0 else "not_late"
