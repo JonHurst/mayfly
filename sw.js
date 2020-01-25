@@ -26,7 +26,7 @@ function install_sw(event) {
 function do_fetch(event) {
     console.log("sw fetch event triggered");
     event.respondWith(
-        self.fetch(event.request).then(
+        self.fetch(event.request, {cache: "no-store"}).then(
             function(response) {
                 let rclone = response.clone();
                 self.caches.open(CACHE_NAME).then(
