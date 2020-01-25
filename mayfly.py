@@ -6,6 +6,7 @@ import csv
 from typing import NamedTuple, List, Dict, Tuple, Optional
 import datetime
 import getpass
+import json
 
 import templates
 import flight_info
@@ -24,6 +25,7 @@ class Service(NamedTuple):
 class MayflyBin(NamedTuple):
     arrivals: List[Service]
     departures: List[Service]
+
 
 
 def process_csv(data: List[str]) -> List[Service]:
@@ -176,31 +178,6 @@ def build_bin(current_bin: datetime.datetime,
         departures_listing))
 
 
-def build_javascript_lookup_object(
-        data: Dict[datetime.datetime, MayflyBin],
-        start_bin: datetime.datetime,
-        end_bin: datetime.datetime
-) -> str:
-    global ezy_operator_ids
-    reverse_dict: Dict[str, List[datetime.datetime]] = {}
-    for key in data:
-        if key < start_bin or key >= end_bin: continue
-        for _list in (data[key].arrivals, data[key].departures):
-            for service in _list:
-                if service.operator_id not in ezy_operator_ids:
-                   continue
-                if service.service_id not in reverse_dict:
-                    reverse_dict[service.service_id] = []
-                reverse_dict[service.service_id].append(key)
-    pairs = []
-    for service_id in reverse_dict:
-        pairs.append('"{}": [{}]'.format(
-            service_id,
-            ", ".join(['"' + _make_id(X) + '"'
-                       for X in reverse_dict[service_id]])))
-    return "var lookup = {" + ", ".join(pairs) + "};"
-
-
 def build_page(data: Dict[datetime.datetime, MayflyBin],
                max_scale: int = 10,
                warm_threshold: int = 7,
@@ -212,6 +189,7 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
         datetime.timedelta(hours=1))
     end_bin = start_bin + datetime.timedelta(hours=mayfly_window)
     bin_list = []
+    lookup: Dict[str, List[str]] = {}
     current_bin = start_bin
     while current_bin != end_bin:
         if current_bin == start_bin or (
@@ -221,9 +199,16 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
             bin_list.append(h)
         bin_list.append(
             build_bin(current_bin, data, max_scale, warm_threshold))
+        if current_bin in data:
+            for sid in [X.service_id for X in
+                        data[current_bin].arrivals +
+                        data[current_bin].departures
+                        if X.operator_id in ezy_operator_ids]:
+                if sid not in lookup: lookup[sid] = []
+                lookup[sid].append(_make_id(current_bin))
         current_bin = current_bin + datetime.timedelta(minutes=30)
     return (templates.page_template.format(
-        build_javascript_lookup_object(data, start_bin, end_bin),
+        json.dumps(lookup),
         templates.table_template.format(
             "".join(bin_list))))
 
