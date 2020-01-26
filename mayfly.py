@@ -7,6 +7,7 @@ from typing import NamedTuple, List, Dict, Tuple, Optional
 import datetime
 import getpass
 import json
+import pytz
 
 import templates
 import flight_info
@@ -33,17 +34,24 @@ def process_csv(data: List[str]) -> List[Service]:
 
     Args:
        data: List of strings representing lines of a csv file
-"""
+
+    Example csv line is:
+
+    06/01/2020,A,TOM,6751,TFS,GCTS,TFS,GCTS,73H,189,0030,C,ES,04DEC2019 1403
+
+    Interesting fields: 0: date (BRS local); 1: arrival(A) or departure(D);
+    2:operator id; 3: service id; 4: origin or destination; 10: time (BRS local)
+    """
     reader = csv.reader(data)
     retval: List[Service] = []
+    london_tz = pytz.timezone('Europe/London')
     for row in reader:
-        #todo: check data integrity
         dt_string = row[0] + row[10]
         dt = datetime.datetime.strptime(dt_string, "%d/%m/%Y%H%M")
-        #todo: convert time to UTC
+        utc_dt = london_tz.localize(dt).astimezone(pytz.utc).replace(tzinfo=None)
         retval.append(Service(
             type_=row[1],
-            dt=dt,
+            dt=utc_dt,
             operator_id=row[2],
             service_id=row[3],
             dest_or_orig=row[4]))
