@@ -189,7 +189,8 @@ def build_bin(current_bin: datetime.datetime,
 def build_page(data: Dict[datetime.datetime, MayflyBin],
                max_scale: int = 10,
                warm_threshold: int = 7,
-               mayfly_window: int = 48
+               mayfly_window: int = 48,
+               updated:bool = False
 ) -> str:
     start_bin = (
         datetime.datetime.utcnow().replace(
@@ -217,6 +218,8 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
         current_bin = current_bin + datetime.timedelta(minutes=30)
     return (templates.page_template.format(
         json.dumps(lookup),
+        (f"Updated from AIMS at {datetime.datetime.utcnow():%H:%Mz}"
+         if updated else "AIMS update not available"),
         templates.table_template.format(
             "".join(bin_list))))
 
@@ -224,10 +227,14 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
 def main(csv_filename: str, html_filename: str) -> None:
     with open(csv_filename) as f:
         services = process_csv(f.readlines())
-        services = update_services_from_AIMS(services) or services
+        updated_services = update_services_from_AIMS(services)
+        updated = False
+        if updated_services:
+            services = updated_services
+            updated = True
         bins = split_into_bins(services)
         with open(html_filename, "w") as o:
-            o.write(build_page(bins))
+            o.write(build_page(bins, updated=updated))
 
 
 if __name__ == "__main__":

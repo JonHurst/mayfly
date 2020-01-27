@@ -13,10 +13,14 @@ def lambda_handler(event, context):
     print("csv file downloaded")
     with open('/tmp/mayfly.csv') as f:
         services = mayfly.process_csv(f.readlines())
-        services = mayfly.update_services_from_AIMS(services) or services
+        updated_services = mayfly.update_services_from_AIMS(services)
+        updated = False
+        if updated_services:
+            services = updated_services
+            updated = True
         bins = mayfly.split_into_bins(services)
         with open('/tmp/mayfly.html', "w") as o:
-            o.write(mayfly.build_page(bins))
+            o.write(mayfly.build_page(bins, updated=updated))
             print("Uploading html")
             s3.upload_file(
                 '/tmp/mayfly.html',

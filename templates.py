@@ -36,6 +36,7 @@ page_template = """\
 </head>
 <body>
 <h1 id="title">Bristol Mayfly</h1>
+<p id="updated">{}</p>
 <div id="mayfly_chart">
 <input type="text" id="services" placeholder="Enter flight numbers here"/>
 <div id="key"><table>
