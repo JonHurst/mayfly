@@ -41,7 +41,7 @@ def _initialise_session() -> None:
         "Gecko/20100101 Firefox/64.0"})
 
 
-def _login(username:str, password:str) -> None:
+def _login(username:str, password:str, recurse: bool = True) -> None:
     global _session, _aims_url
     ecrew_url = "https://ecrew.easyjet.com/wtouch/wtouch.exe/verify"
     encoded_id = base64.b64encode(username.encode()).decode()
@@ -55,7 +55,7 @@ def _login(username:str, password:str) -> None:
     #If already logged in, need to logout then login again
     if r.text.find("Please log out and try again.") != -1:
         logout(False)
-        _login(username, password)
+        if recurse: _login(username, password, False)
 
 
 def connect(username:str, password:str) -> None:
