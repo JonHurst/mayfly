@@ -15,6 +15,22 @@ import flight_info
 ezy_operator_ids = ["EZY", "EJU", "EZS"]
 
 class Service(NamedTuple):
+    """NamedTuple representing a service extracted from a Mayfly csv.
+
+    Fields:
+        type_: Either 'A' for an arrival or 'D' for a departure
+        dt: For an arrival, the planned time or arrival. For a departure, the
+            planned time of departure.
+        operator_id: A string representing the operator. Usually two or three
+            capital letters, e.g "EZY" or "FR"
+        service_id: A string, usually a three or four digit number, representing
+            the service e.g "455" or "1234".
+        dest_or_orig: An IATA airport code, usually a three capital letter
+            string. For arrivals, the origin of the flight, for departures the
+            destination of the flight.
+        delay: An integer representing the delay in minutes. This will be None
+            unless updated from AIMS.
+    """
     type_: str
     dt: datetime.datetime
     operator_id: str
@@ -24,6 +40,12 @@ class Service(NamedTuple):
 
 
 class MayflyBin(NamedTuple):
+    """Lists of arrivals and depatures within a given time window.
+
+    Fields:
+        arrivals: list of Service objects with type_ 'A'
+        departures: list of Service objects with type_ 'D'
+    """
     arrivals: List[Service]
     departures: List[Service]
 
@@ -61,6 +83,15 @@ def process_csv(data: List[str]) -> List[Service]:
 
 def _make_update_dict(flights: List[flight_info.Flight]
 ) -> Dict[Service, Service]:
+    """Create mappings for AIMS updates.
+
+    Args:
+        flights: A list of flight_info.Flight objects
+
+    Returns:
+        A mapping from the scheduled Service object to a Service object with
+        estimated or actual times.
+    """
     updates = {}
     for f in flights:
         if f.from_ == "BRS":
@@ -89,6 +120,16 @@ def _make_update_dict(flights: List[flight_info.Flight]
 
 def update_services_from_AIMS(services: List[Service]
 ) -> Optional[List[Service]]:
+    """Use AIMS to update a list of Service objects.
+
+    Args:
+        services: The list of services to apply the update to.
+
+    Returns:
+        An updated list of services or None if unable to update.
+
+    The original input list is not changed by this function.
+    """
     try:
         flights = flight_info.get_AIMS_flights(
             os.getenv("AIMSPASSWORD") or getpass.getpass(),
