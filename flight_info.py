@@ -53,18 +53,19 @@ def parse_flight_info_html(html:str, d: dt.date
     return info
 
 
-def get_AIMS_flights(pw: str, d: dt.date, n: int = 1) -> List[Flight]:
+def get_AIMS_flights(pw: str, d: dt.date, count: int = 1) -> List[Flight]:
     """Get specified flights from AIMS
 
     Args:
         pw: AIMS password
         d: The first date required
-        n: The number of subsequent days required
+        count: The number of days required
     """
+    assert(count > 0)
     aims.connect("009448", pw)
     flights: List[Flight] = []
     for type_ in ("A", "D"):
-        for n in range(2):
+        for n in range(count):
             date = dt.date.today() + dt.timedelta(days=n)
             html = aims.flight_info(date, type_)
             flights.extend(parse_flight_info_html(html, date))
