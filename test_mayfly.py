@@ -69,3 +69,6 @@ class TestMayfly(unittest.TestCase):
         }
         self.maxDiff = None
         self.assertEqual(mayfly._make_update_dict(data), result)
+        self.assertEqual(mayfly._make_update_dict([]), {})
+        with self.assertRaises(AttributeError) as cm:
+            mayfly._make_update_dict("wrong type of data")
