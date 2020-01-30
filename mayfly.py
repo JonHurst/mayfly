@@ -106,15 +106,12 @@ def _make_update_dict(flights: List[flight_info.Flight]
             dest_or_orig = f.from_
             dt = f.sched_on
             new_dt = f.on
-        updates[Service(type_=type_, dt=dt,
+        orig = Service(type_=type_, dt=dt,
                         operator_id=f.operator,
                         service_id=f.flight_num,
-                        dest_or_orig=dest_or_orig)] = (
-                Service(type_=type_, dt=new_dt,
-                        operator_id=f.operator,
-                        service_id=f.flight_num,
-                        dest_or_orig=dest_or_orig,
-                        delay=int(delay.total_seconds() / 60)))
+                        dest_or_orig=dest_or_orig)
+        updates[orig] = orig._replace(
+            dt=new_dt, delay=int(delay.total_seconds() / 60))
     return updates
 
 
