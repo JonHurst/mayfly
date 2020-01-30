@@ -4,6 +4,7 @@ import datetime
 import flight_info
 import os
 import getpass
+from mayfly import MayflyBin, Service
 
 class TestMayfly(unittest.TestCase):
 
@@ -129,3 +130,46 @@ class TestMayfly(unittest.TestCase):
         flight_info.get_AIMS_flights = raise_exception
         self.assertEqual(mayfly.update_services_from_AIMS(data), None)
         flight_info.get_AIMS_flights = old
+
+
+    def test_split_into_bins(self):
+        data = [
+            mayfly.Service(type_='D', dt=datetime.datetime(2020, 1, 30, 20, 50),
+                           operator_id='EZY', service_id='570',
+                           dest_or_orig='NCL', delay=None),
+            mayfly.Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 55),
+                           operator_id='EZY', service_id='571',
+                           dest_or_orig='NCL', delay=None),
+        ]
+        for mins in range(10, 70, 10):
+            for n in (0, 1):
+                data.append(
+                    data[n]._replace(
+                        dt = data[n].dt + datetime.timedelta(minutes=mins),
+                        service_id = str(int(data[n].service_id) + mins)))
+        result = {
+    datetime.datetime(2020, 1, 30, 20, 30): MayflyBin(
+        arrivals=[],
+        departures=[
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 20, 50), operator_id='EZY', service_id='570', dest_or_orig='NCL', delay=None)]),
+    datetime.datetime(2020, 1, 30, 21, 0): MayflyBin(
+        arrivals=[],
+        departures=[Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 0), operator_id='EZY', service_id='580', dest_or_orig='NCL', delay=None),
+                    Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 10), operator_id='EZY', service_id='590', dest_or_orig='NCL', delay=None),
+                    Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 20), operator_id='EZY', service_id='600', dest_or_orig='NCL', delay=None)]),
+    datetime.datetime(2020, 1, 30, 21, 30): MayflyBin(
+        arrivals=[Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 55), operator_id='EZY', service_id='571', dest_or_orig='NCL', delay=None)],
+        departures=[Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 30), operator_id='EZY', service_id='610', dest_or_orig='NCL', delay=None),
+                    Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 40), operator_id='EZY', service_id='620', dest_or_orig='NCL', delay=None),
+                    Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 50), operator_id='EZY', service_id='630', dest_or_orig='NCL', delay=None)]),
+    datetime.datetime(2020, 1, 30, 22, 0): MayflyBin(
+        arrivals=[Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 5), operator_id='EZY', service_id='581', dest_or_orig='NCL', delay=None),
+                  Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 15), operator_id='EZY', service_id='591', dest_or_orig='NCL', delay=None),
+                  Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 25), operator_id='EZY', service_id='601', dest_or_orig='NCL', delay=None)],
+        departures=[]),
+    datetime.datetime(2020, 1, 30, 22, 30): MayflyBin(
+        arrivals=[Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 35), operator_id='EZY', service_id='611', dest_or_orig='NCL', delay=None),
+                  Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 45), operator_id='EZY', service_id='621', dest_or_orig='NCL', delay=None),
+                  Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 55), operator_id='EZY', service_id='631', dest_or_orig='NCL', delay=None)],
+        departures=[])}
+        self.assertEqual(mayfly.split_into_bins(data), result)
