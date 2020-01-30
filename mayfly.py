@@ -151,6 +151,18 @@ def update_services_from_AIMS(services: List[Service]
 
 def split_into_bins(services: List[Service]
 ) -> Dict[datetime.datetime, MayflyBin]:
+    """Organise Service objects into 30 minute bins.
+
+    Args:
+        services: A list of Service objects.
+
+    Returns:
+        A dictionary with bin label (start datetime of the bin) as key and a
+        MayflyBin object as data.
+
+    The MayflyBin is a tuple containing a list of arrivals and a list of
+    departures, each in the form of Service objects.
+    """
     retval: Dict[datetime.datetime, MayflyBin] = {}
     for service in services:
         if service.dt.minute < 30:
