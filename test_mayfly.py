@@ -173,3 +173,34 @@ class TestMayfly(unittest.TestCase):
                   Service(type_='A', dt=datetime.datetime(2020, 1, 30, 22, 55), operator_id='EZY', service_id='631', dest_or_orig='NCL', delay=None)],
         departures=[])}
         self.assertEqual(mayfly.split_into_bins(data), result)
+
+
+class TestHTMLGeneration(unittest.TestCase):
+
+    def test_build_service_list(self):
+        data = [
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 30), operator_id='EZY', service_id='610', dest_or_orig='NCL', delay=None),
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 40), operator_id='EZY', service_id='620', dest_or_orig='NCL', delay=10),
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 41), operator_id='EZY', service_id='621', dest_or_orig='BRS', delay=-10),
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 42), operator_id='EZY', service_id='622', dest_or_orig='NCL', delay=0),
+            Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 50), operator_id='TOM', service_id='630', dest_or_orig='NCL', delay=None),
+        ]
+        expected_result = """\
+<ul><li class="ezy"><span class="time">21:30</span>:
+<span class="service">EZY610 NCL</span>
+<span class="delay_unknown"></span></li>
+<li class="ezy"><span class="time">21:40</span>:
+<span class="service">EZY620 NCL</span>
+<span class="late">(+10)</span></li>
+<li class="ezy"><span class="time">21:41</span>:
+<span class="service">EZY621 BRS</span>
+<span class="not_late">(-10)</span></li>
+<li class="ezy"><span class="time">21:42</span>:
+<span class="service">EZY622 NCL</span>
+<span class="not_late">(+0)</span></li>
+<li class="nonezy"><span class="time">21:50</span>:
+<span class="service">TOM630 NCL</span></li>
+</ul>
+"""
+        self.assertEqual(mayfly.build_service_list(data),
+                         expected_result)

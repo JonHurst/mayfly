@@ -181,25 +181,45 @@ def _make_id(dt: datetime.datetime) -> str:
 
 def build_service_list(services: List[Service]
 ) -> str:
+    """Build an html list from a list of Service objects.
+
+    Args:
+        services: A list of Service objects.
+
+    Returns:
+        A string containing an html list.
+
+    The templates.ezy_service_template template is used for list items where the
+    operator_id of the service is one of the ids listed in the ezy_operator_ids
+    global, otherwise templates.nonezy_service_template is used. These templates
+    have all the fields of the Service object available as keywords. In addition
+    they have the following keywords available:
+
+        "time": The time part of the dt field, formatted as HH:MM
+        "delay_str": The delay formatted as (+X) for late, (-X) for early or an
+                     empty string for unknown, where X is the delay in minutes
+        "late_str": A string that is either "late" if late, "not_late" if not
+                    late or "delay_unknown" if no AIMS data is available.
+
+    The list items are concatenated in time order, and then wrapped in
+    templates.service_list_template.
+
+    """
     global ezy_operator_ids
     output_strings: List[str] = []
     for s in sorted(services, key=lambda x: x.dt):
-        template = templates.nonezy_service_template
+        s_dict = s._asdict()
+        s_dict["time"] = s.dt.strftime("%H:%M")
         if s.delay is None:
-            late_str = "hidden"
-            delay = 0
+            s_dict["late_str"] = "delay_unknown"
+            s_dict["delay_str"] = ""
         else:
-            late_str = "late" if s.delay > 0 else "not_late"
-            delay = s.delay
-        if s.operator_id in ezy_operator_ids:
-            output_strings.append(templates.ezy_service_template.format(
-                s.dt.strftime("%H:%M"),
-                "{}{} {}".format(s.operator_id, s.service_id, s.dest_or_orig),
-                late_str, delay))
-        else:
-            output_strings.append(templates.nonezy_service_template.format(
-                s.dt.strftime("%H:%M"),
-                "{}{} {}".format(s.operator_id, s.service_id, s.dest_or_orig)))
+            s_dict["late_str"] = "late" if s.delay > 0 else "not_late"
+            s_dict["delay_str"] = "({:+d})".format(s.delay)
+        template = (templates.ezy_service_template
+                    if s.operator_id in ezy_operator_ids
+                    else templates.nonezy_service_template)
+        output_strings.append(template.format(**s_dict))
     return templates.service_list_template.format(
         "".join(output_strings))
 

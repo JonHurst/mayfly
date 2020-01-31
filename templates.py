@@ -55,12 +55,12 @@ service_list_template = """\
 """
 
 ezy_service_template = """\
-<li class="ezy"><span class="time">{}</span>:
-<span class="service">{}</span>
-<span class="{}">({:+d})</span></li>
+<li class="ezy"><span class="time">{time}</span>:
+<span class="service">{operator_id}{service_id} {dest_or_orig}</span>
+<span class="{late_str}">{delay_str}</span></li>
 """
 
 nonezy_service_template = """\
-<li class="nonezy"><span class="time">{}</span>:
-<span class="service">{}</span></li>
+<li class="nonezy"><span class="time">{time}</span>:
+<span class="service">{operator_id}{service_id} {dest_or_orig}</span></li>
 """
