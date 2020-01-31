@@ -204,3 +204,120 @@ class TestHTMLGeneration(unittest.TestCase):
 """
         self.assertEqual(mayfly.build_service_list(data),
                          expected_result)
+
+
+    def test_build_bin(self):
+        #patch build_service_list to return empty string
+        old_sl = mayfly.build_service_list
+        mayfly.build_service_list = lambda l: ""
+        data = mayfly.MayflyBin(
+            arrivals= [
+                Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 30), operator_id='EZY', service_id='610', dest_or_orig='NCL'),
+                Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 40), operator_id='EZY', service_id='620', dest_or_orig='NCL'),
+                Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 45), operator_id='TOM', service_id='621', dest_or_orig='NCL'),
+            ],
+            departures= [
+                Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 30), operator_id='EZY', service_id='610', dest_or_orig='NCL'),
+                Service(type_='D', dt=datetime.datetime(2020, 1, 30, 21, 40), operator_id='EZY', service_id='620', dest_or_orig='NCL'),
+            ])
+        result =   mayfly.build_bin(
+            datetime.datetime(2020, 1, 30, 21, 30),
+            data,
+            10,
+            (0.6, 3.75, 6.0))
+        expected_result = """\
+<tr id="id2001302130" class="bin">
+<th class="time"><span>21:30</span></th>
+<td class="bin_data w0">
+<p class="arr" style="width:30%">3</p>
+<div class="arr_svc hidden"></div>
+<p class="dep" style="width:20%">2</p>
+<div class="dep_svc hidden"></div>
+</td>
+</tr>
+"""
+        self.assertEqual(result, expected_result)
+
+        #warning level 1
+        result =   mayfly.build_bin(
+            datetime.datetime(2020, 1, 30, 21, 30),
+            data,
+            10,
+            (0.5, 1.5, 6.0))
+        expected_result = """\
+<tr id="id2001302130" class="bin">
+<th class="time"><span>21:30</span></th>
+<td class="bin_data w1">
+<p class="arr" style="width:30%">3</p>
+<div class="arr_svc hidden"></div>
+<p class="dep" style="width:20%">2</p>
+<div class="dep_svc hidden"></div>
+</td>
+</tr>
+"""
+        self.assertEqual(result, expected_result)
+
+        #warning level 2
+        result =   mayfly.build_bin(
+            datetime.datetime(2020, 1, 30, 21, 30),
+            data,
+            10,
+            (0.5, 1.5, 1.5))
+        expected_result = """\
+<tr id="id2001302130" class="bin">
+<th class="time"><span>21:30</span></th>
+<td class="bin_data w2">
+<p class="arr" style="width:30%">3</p>
+<div class="arr_svc hidden"></div>
+<p class="dep" style="width:20%">2</p>
+<div class="dep_svc hidden"></div>
+</td>
+</tr>
+"""
+        self.assertEqual(result, expected_result)
+
+        #empty departures
+        data = mayfly.MayflyBin(
+            arrivals= [
+                Service(type_='A', dt=datetime.datetime(2020, 1, 30, 21, 45), operator_id='TOM', service_id='621', dest_or_orig='NCL'),
+            ],
+            departures= [])
+        result = mayfly.build_bin(
+            datetime.datetime(2020, 1, 30, 21, 30),
+            data,
+            10,
+            (0.6, 3.75, 6.0))
+        expected_result = """\
+<tr id="id2001302130" class="bin">
+<th class="time"><span>21:30</span></th>
+<td class="bin_data w0">
+<p class="arr" style="width:10%">1</p>
+<div class="arr_svc hidden"></div>
+<p class="dep" style="width:0%"> </p>
+<div class="dep_svc hidden"></div>
+</td>
+</tr>
+"""
+
+        #both empty
+        self.assertEqual(result, expected_result)
+        data = mayfly.MayflyBin([], [])
+        result = mayfly.build_bin(
+            datetime.datetime(2020, 1, 30, 21, 30),
+            data,
+            10,
+            (0.6, 3.75, 6.0))
+        expected_result = """\
+<tr id="id2001302130" class="bin">
+<th class="time"><span>21:30</span></th>
+<td class="bin_data w0">
+<p class="arr" style="width:0%"> </p>
+<div class="arr_svc hidden"></div>
+<p class="dep" style="width:0%"> </p>
+<div class="dep_svc hidden"></div>
+</td>
+</tr>
+"""
+        self.assertEqual(result, expected_result)
+        #restore patch
+        mayfly.build_service_list = old_sl

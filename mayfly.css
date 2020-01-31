@@ -37,12 +37,16 @@ td {
     padding: 2px;
 }
 
-td.cool {
-    background: linear-gradient(lightgreen, white);
+td.w0 {
+    background: linear-gradient(345deg, #beffb8, #edffed);
 }
 
-td.warm {
-    background: linear-gradient(#ffbf80, white);
+td.w1 {
+    background: linear-gradient(345deg, #ffebb8, #feffed);
+}
+
+td.w2 {
+    background: linear-gradient(345deg, #ffa6a0, #fff8f7);
 }
 
 td.bin_data p {

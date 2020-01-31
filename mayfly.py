@@ -225,42 +225,62 @@ def build_service_list(services: List[Service]
 
 
 def build_bin(current_bin: datetime.datetime,
-              data: Dict[datetime.datetime, MayflyBin],
-              max_scale: int, warm_threshold: int
+              data: Optional[MayflyBin],
+              max_scale: int,
+              heat_map_params: Tuple[float, float, float]
 ) -> str:
-    arrivals_count, departures_count = 0, 0
-    arrivals_listing, departures_listing = "", ""
-    if current_bin in data:
-        arrivals_count = len(data[current_bin].arrivals)
-        arrivals_listing = build_service_list(
-            data[current_bin].arrivals)
-        departures_count = len(data[current_bin].departures)
-        departures_listing = build_service_list(
-            data[current_bin].departures)
-    heat = "cool"
-    if departures_count + arrivals_count >= warm_threshold:
-        heat = "warm"
-    arrivals_width = arrivals_count * 100 // max_scale
-    if arrivals_width > 100: arrivals_width = 100
-    departures_width = departures_count * 100 // max_scale
-    if departures_width > 100: departures_width = 100
-    return (templates.bin_template.format(
-        _make_id(current_bin),
-        current_bin,
-        heat,
-        arrivals_width,
-        str(arrivals_count) if arrivals_count else " ",
-        arrivals_listing,
-        departures_width,
-        str(departures_count) if departures_count else " ",
-        departures_listing))
+    """Produce an html table row from a MayflyBin.
+
+    Args:
+
+        current_bin: The datetime object that acts as the identifier for the bin
+                     to be processed.
+        data: The MayflyBin object to be processed
+        max_scale: The number of services to use as full scale. If there are more
+                   services than full scale, they wil be presented as full scale.
+        heat_map_params: A tuple containing the heat map parameters (see below)
+
+    Returns:
+        The html of a table row.
+
+    The heat map parameters are (x, w1, w2). x is the balance between arrivals
+    and departures, with x = 0.5 being equally balanced and x > 0.5 meaning
+    arrivals are considered more significant than departures. w1 and w2 are the
+    thresholds for the two warning levels. Levels below w1 are supposed to
+    indicate that inbound delays are unlikely, between w1 and w2 that moderate
+    inbound delays are likely and above w2 that significant inbound delays are
+    likely.
+    """
+    t_dict = {
+        "bin_id": _make_id(current_bin),
+        "bin_start_time": current_bin.strftime("%H:%M"),
+        "arrivals_count": " ", "departures_count": " ",
+        "arrivals_width": "0%", "departures_width": "0%",
+        "arrivals_listing": "", "departures_listing": "",
+        "heat": "w0"
+        }
+    if data:
+        t_dict["arrivals_count"] = str(len(data.arrivals) or " ")
+        t_dict["departures_count"] = str(len(data.departures) or " ")
+        a = len(data.arrivals) * 100 // max_scale
+        t_dict["arrivals_width"] = "100%" if a > 100 else str(a) + "%"
+        d = len(data.departures) * 100 // max_scale
+        t_dict["departures_width"] = "100%" if d > 100 else str(d) + "%"
+        t_dict["arrivals_listing"] = build_service_list(data.arrivals)
+        t_dict["departures_listing"] = build_service_list(data.departures)
+        x, w1, w2 = heat_map_params
+        h = x * len(data.arrivals) + (1 - x) * len(data.departures)
+        if h >= w1: t_dict["heat"] = "w1"
+        if h >= w2: t_dict["heat"] = "w2"
+    return templates.bin_template.format(**t_dict)
 
 
-def build_page(data: Dict[datetime.datetime, MayflyBin],
-               max_scale: int = 10,
-               warm_threshold: int = 7,
-               mayfly_window: int = 48,
-               updated:bool = False
+def build_page(
+        data: Dict[datetime.datetime, MayflyBin],
+        max_scale: int = 10,
+        heat_map_params: Tuple[float, float, float] = (0.6, 3.5, 4.74),
+        mayfly_window: int = 48,
+        updated:bool = False
 ) -> str:
     start_bin = (
         datetime.datetime.utcnow().replace(
@@ -277,7 +297,8 @@ def build_page(data: Dict[datetime.datetime, MayflyBin],
                     current_bin.strftime("%A %d %B"))
             bin_list.append(h)
         bin_list.append(
-            build_bin(current_bin, data, max_scale, warm_threshold))
+            build_bin(current_bin, data.get(current_bin, None),
+                      max_scale, heat_map_params))
         if current_bin in data:
             for sid in [X.service_id for X in
                         data[current_bin].arrivals +

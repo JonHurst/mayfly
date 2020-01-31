@@ -3,13 +3,13 @@ header = """\
 """
 
 bin_template = """\
-<tr id="{}" class="bin">
-<th class="time"><span>{:%H:%M}</span></th>
-<td class="bin_data {}">
-<p class="arr" style="width:{:d}%">{}</p>
-<div class="arr_svc hidden">{}</div>
-<p class="dep" style="width:{:d}%">{}</p>
-<div class="dep_svc hidden">{}</div>
+<tr id="{bin_id}" class="bin">
+<th class="time"><span>{bin_start_time}</span></th>
+<td class="bin_data {heat}">
+<p class="arr" style="width:{arrivals_width}">{arrivals_count}</p>
+<div class="arr_svc hidden">{arrivals_listing}</div>
+<p class="dep" style="width:{departures_width}">{departures_count}</p>
+<div class="dep_svc hidden">{departures_listing}</div>
 </td>
 </tr>
 """
