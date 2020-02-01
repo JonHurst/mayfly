@@ -282,6 +282,26 @@ def build_page(
         mayfly_window: int = 48,
         updated:bool = False
 ) -> str:
+    """Create an html page from a dictionary of MayflyBin objects.
+
+    :param data: The dictionary containing the source data.  Keys are bin
+        identifiers in the form of datetime objects (the start time of the bin),
+        values are MayflyBin objects.
+    :param max_scale: The number of arrivals or departures that will cause the
+        bar to be full width.  If the number of arrivals or depatures is greater
+        than max_scale, the bar will be shown full width with but labelled with
+        the correct number.
+    :param heat_map_params: A tuple containing the parameters used to determine
+        the colour of the background of each bin.  See build_bin documentation
+        for details.
+    :param mayfly_window: The number of hours worth of bins to output.
+    :param updated: If True, indicates that the mayfly data has been updated
+        with AIMS data.
+
+    :return: The html page.  This contains a table with the bins and a
+             javascript variable, lookup, that can be used to quickly lookup in
+             which bins a particular flight number occurs.
+    """
     start_bin = (
         datetime.datetime.utcnow().replace(
             minute=0, second=0, microsecond=0) -
@@ -299,6 +319,9 @@ def build_page(
         bin_list.append(
             build_bin(current_bin, data.get(current_bin, None),
                       max_scale, heat_map_params))
+        #Create a dictionary to serialize and insert as the 'lookup' javascript
+        #variable. Key is service number, value is a list of bin identifiers in
+        #which flights with that service number may be found.
         if current_bin in data:
             for sid in [X.service_id for X in
                         data[current_bin].arrivals +
