@@ -17,19 +17,18 @@ ezy_operator_ids = ["EZY", "EJU", "EZS"]
 class Service(NamedTuple):
     """NamedTuple representing a service extracted from a Mayfly csv.
 
-    Fields:
-        type_: Either 'A' for an arrival or 'D' for a departure
-        dt: For an arrival, the planned time or arrival. For a departure, the
-            planned time of departure.
-        operator_id: A string representing the operator. Usually two or three
-            capital letters, e.g "EZY" or "FR"
-        service_id: A string, usually a three or four digit number, representing
-            the service e.g "455" or "1234".
-        dest_or_orig: An IATA airport code, usually a three capital letter
-            string. For arrivals, the origin of the flight, for departures the
-            destination of the flight.
-        delay: An integer representing the delay in minutes. This will be None
-            unless updated from AIMS.
+    :var type_: Either 'A' for an arrival or 'D' for a departure
+    :var dt: For an arrival, the planned time or arrival.  For a departure, the
+             planned time of departure.
+    :var operator_id: A string representing the operator.  Usually two or three
+        capital letters, e.g "EZY" or "FR"
+    :var service_id: A string, usually a three or four digit number,
+        representing the service e.g "455" or "1234".
+    :var dest_or_orig: An IATA airport code, usually a three capital letter
+        string.  For arrivals, the origin of the flight, for departures the
+        destination of the flight.
+    :var delay: An integer representing the delay in minutes.  This will be None
+        unless updated from AIMS.
     """
     type_: str
     dt: datetime.datetime
@@ -42,9 +41,8 @@ class Service(NamedTuple):
 class MayflyBin(NamedTuple):
     """Lists of arrivals and depatures within a given time window.
 
-    Fields:
-        arrivals: list of Service objects with type_ 'A'
-        departures: list of Service objects with type_ 'D'
+    :var arrivals: list of Service objects with type_ 'A'
+    :var departures: list of Service objects with type_ 'D'
     """
     arrivals: List[Service]
     departures: List[Service]
@@ -54,15 +52,16 @@ class MayflyBin(NamedTuple):
 def process_csv(data: List[str]) -> List[Service]:
     """Map a list of lines of CSV data into a list of Service tuples
 
-    Args:
-       data: List of strings representing lines of a csv file
-
     Example csv line is:
 
     06/01/2020,A,TOM,6751,TFS,GCTS,TFS,GCTS,73H,189,0030,C,ES,04DEC2019 1403
 
     Interesting fields: 0: date (BRS local); 1: arrival(A) or departure(D);
     2:operator id; 3: service id; 4: origin or destination; 10: time (BRS local)
+
+    :param data: List of strings representing lines of a csv file
+
+    :returns: A corresponding list of Service objects
     """
     reader = csv.reader(data)
     retval: List[Service] = []
@@ -85,12 +84,10 @@ def _make_update_dict(flights: List[flight_info.Flight]
 ) -> Dict[Service, Service]:
     """Create mappings for AIMS updates.
 
-    Args:
-        flights: A list of flight_info.Flight objects
+    :param flights: A list of flight_info.Flight objects
 
-    Returns:
-        A mapping from the scheduled Service object to a Service object with
-        estimated or actual times.
+    :returns: A mapping from the scheduled Service object to a Service object
+              with estimated or actual times.
     """
     updates = {}
     for f in flights:
@@ -119,13 +116,10 @@ def update_services_from_AIMS(services: List[Service]
 ) -> Optional[List[Service]]:
     """Use AIMS to update a list of Service objects.
 
-    Args:
-        services: The list of services to apply the update to.
+    :param services: The list of services to apply the update to.
 
-    Returns:
-        An updated list of services or None if unable to update.
-
-    The original input list is not changed by this function.
+    :returns: An updated list of services or None if unable to update.  The
+              original input list is not changed by this function.
     """
     try:
         flights = flight_info.get_AIMS_flights(
@@ -150,15 +144,10 @@ def split_into_bins(services: List[Service]
 ) -> Dict[datetime.datetime, MayflyBin]:
     """Organise Service objects into 30 minute bins.
 
-    Args:
-        services: A list of Service objects.
+    :param services: A list of Service objects.
 
-    Returns:
-        A dictionary with bin label (start datetime of the bin) as key and a
-        MayflyBin object as data.
-
-    The MayflyBin is a tuple containing a list of arrivals and a list of
-    departures, each in the form of Service objects.
+    :returns: A dictionary with bin label (start datetime of the bin) as key and
+              a MayflyBin object as data.
     """
     retval: Dict[datetime.datetime, MayflyBin] = {}
     for service in services:
@@ -183,27 +172,26 @@ def build_service_list(services: List[Service]
 ) -> str:
     """Build an html list from a list of Service objects.
 
-    Args:
-        services: A list of Service objects.
-
-    Returns:
-        A string containing an html list.
-
     The templates.ezy_service_template template is used for list items where the
     operator_id of the service is one of the ids listed in the ezy_operator_ids
-    global, otherwise templates.nonezy_service_template is used. These templates
-    have all the fields of the Service object available as keywords. In addition
-    they have the following keywords available:
+    global, otherwise templates.nonezy_service_template is used.  These
+    templates have all the fields of the Service object available as keywords.
+    In addition they have the following keywords available:
 
-        "time": The time part of the dt field, formatted as HH:MM
-        "delay_str": The delay formatted as (+X) for late, (-X) for early or an
-                     empty string for unknown, where X is the delay in minutes
-        "late_str": A string that is either "late" if late, "not_late" if not
-                    late or "delay_unknown" if no AIMS data is available.
+    * "time": The time part of the dt field, formatted as HH:MM
+
+    * "delay_str": The delay formatted as (+X) for late, (-X) for early or an
+    empty string for unknown, where X is the delay in minutes
+
+    * "late_str": A string that is either "late" if late, "not_late" if not late
+    or "delay_unknown" if no AIMS data is available.
 
     The list items are concatenated in time order, and then wrapped in
     templates.service_list_template.
 
+    :param services: A list of Service objects.
+
+    :returns: A string containing an html list.
     """
     global ezy_operator_ids
     output_strings: List[str] = []
@@ -231,25 +219,22 @@ def build_bin(current_bin: datetime.datetime,
 ) -> str:
     """Produce an html table row from a MayflyBin.
 
-    Args:
+    :param current_bin: The datetime object that acts as the identifier for the
+        bin to be processed.
+    :param data: The MayflyBin object to be processed
+    :param max_scale: The number of services to use as full scale.  If there are
+        more services than full scale, they wil be presented as full scale.
+    :param heat_map_params: A tuple containing the heat map parameters.
 
-        current_bin: The datetime object that acts as the identifier for the bin
-                     to be processed.
-        data: The MayflyBin object to be processed
-        max_scale: The number of services to use as full scale. If there are more
-                   services than full scale, they wil be presented as full scale.
-        heat_map_params: A tuple containing the heat map parameters (see below)
+        The heat map parameters are (x, w1, w2).  x is the balance between
+        arrivals and departures, with x = 0.5 being equally balanced and x > 0.5
+        meaning arrivals are considered more significant than departures.  w1
+        and w2 are the thresholds for the two warning levels.  Levels below w1
+        are supposed to indicate that inbound delays are unlikely, between w1
+        and w2 that moderate inbound delays are likely and above w2 that
+        significant inbound delays are likely.
 
-    Returns:
-        The html of a table row.
-
-    The heat map parameters are (x, w1, w2). x is the balance between arrivals
-    and departures, with x = 0.5 being equally balanced and x > 0.5 meaning
-    arrivals are considered more significant than departures. w1 and w2 are the
-    thresholds for the two warning levels. Levels below w1 are supposed to
-    indicate that inbound delays are unlikely, between w1 and w2 that moderate
-    inbound delays are likely and above w2 that significant inbound delays are
-    likely.
+    :returns: The html of a table row.
     """
     t_dict = {
         "bin_id": _make_id(current_bin),
