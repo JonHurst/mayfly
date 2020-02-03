@@ -10,6 +10,19 @@ import aims
 
 
 class Flight(NamedTuple):
+    """The data from a line of an AIMS flight info table.
+
+    :var operator: Three letter code of operator. Currently either "EZY", "EJU" or "EZS".
+    :var flight_num: Flight number, usually a three or four digit number.
+    :var from_: Origin of the flight.
+    :var to: Destination of the flight.
+    :var type_: The type of aircraft (e.g. A320)
+    :var reg: The registratioin of the aircraft.
+    :var sched_off: The scheduled off blocks time.
+    :var sched_on: The scheduled on blocks time.
+    :var off: The actual or estimated off blocks time.
+    :var on: The actual or estimated on blocks time.
+    """
     operator: str
     flight_num: str
     from_: str
@@ -29,6 +42,12 @@ def _to_dt(s:str, d: dt.date) -> dt.datetime:
 
 def parse_flight_info_html(html:str, d: dt.date
 ) -> List[Flight]:
+    """Extract flight data from AIMS html.
+
+    :param html: The html from the AIMS flight info table.
+
+    :returns: A list of Flight objects corresponding to the lines of the table.
+    """
     soup = BeautifulSoup(html, "html.parser")
     info = []
     for row in soup.find_all("tr"):
@@ -54,12 +73,14 @@ def parse_flight_info_html(html:str, d: dt.date
 
 
 def get_AIMS_flights(pw: str, d: dt.date, count: int = 1) -> List[Flight]:
-    """Get specified flights from AIMS
+    """Get specified flights from AIMS.
 
-    Args:
-        pw: AIMS password
-        d: The first date required
-        count: The number of days required
+    :param pw: AIMS password.
+    :param d: The first date required.
+    :param count: The number of days required.
+
+    :returns: A list of Flight objects including arrivals and departures for all
+              the specified dates.
     """
     assert(count > 0)
     aims.connect("009448", pw)
