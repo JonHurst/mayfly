@@ -81,7 +81,7 @@ def process_csv(data: List[str]) -> List[Service]:
 
 
 def _make_update_dict(flights: List[flight_info.Flight]
-) -> Dict[Service, Service]:
+) -> Dict[Service, Optional[Service]]:
     """Create mappings for AIMS updates.
 
     :param flights: A list of flight_info.Flight objects
@@ -89,7 +89,7 @@ def _make_update_dict(flights: List[flight_info.Flight]
     :returns: A mapping from the scheduled Service object to a Service object
               with estimated or actual times.
     """
-    updates = {}
+    updates: Dict[Service, Optional[Service]] = {}
     for f in flights:
         if f.from_ == "BRS":
             type_ = "D"
@@ -107,8 +107,11 @@ def _make_update_dict(flights: List[flight_info.Flight]
                         operator_id=f.operator,
                         service_id=f.flight_num,
                         dest_or_orig=dest_or_orig)
-        updates[orig] = orig._replace(
-            dt=new_dt, delay=int(delay.total_seconds() / 60))
+        if f.reg[:5] == "X-CAN":
+            updates[orig] = None
+        else:
+            updates[orig] = orig._replace(
+                dt=new_dt, delay=int(delay.total_seconds() / 60))
     return updates
 
 
@@ -134,7 +137,9 @@ def update_services_from_AIMS(services: List[Service]
     retval: List[Service] = []
     for s in services:
         if s in updates:
-            retval.append(updates[s])
+            update = updates[s]
+            if update is not None:
+                retval.append(update)
         else:
             retval.append(s)
     return retval
